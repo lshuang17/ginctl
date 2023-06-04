@@ -22,6 +22,16 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+//var (
+//	di bool
+//	//di = *flag.Bool("di", true, "generate code by google wire di")
+//)
+//
+//func init() {
+//	flag.BoolVar(&di, "di", false, "generate code by google wire di")
+//
+//}
+
 //命令执行需要模板，将模板文件一起打包
 
 //go:embed file.tpl
@@ -29,47 +39,43 @@ var tpl embed.FS
 
 func main() {
 	app := cli.NewApp()
-	app.Command("ginctl")
 	app.Name = "ginctl"
 	app.Version = "1.0.0"
 	app.Usage = "go run . [command options]"
-	app.Flags = []cli.Flag{
-		//&cli.StringFlag{
-		//	Name:     "appName",
-		//	Aliases:  []string{"app"},
-		//	Usage:    "module name",
-		//	Required: true,
-		//},
-		&cli.StringFlag{
-			Name:     "packageName",
-			Aliases:  []string{"pkg"},
-			Usage:    "go package name",
-			Required: false,
-		},
-		&cli.BoolFlag{
-			Name:     "wire",
-			Aliases:  []string{"di"},
-			Usage:    "google wire di",
-			Required: false,
-		},
-		&cli.StringFlag{
-			Name:     "authorName",
-			Aliases:  []string{"au"},
-			Usage:    "author who created files",
-			Required: false,
+	app.Commands = []*cli.Command{
+		{
+			Name:    "create",
+			Aliases: []string{"new"},
+			Usage:   "generate app module",
+			Flags: []cli.Flag{
+				&cli.BoolFlag{
+					Name:     "wire",
+					Aliases:  []string{"di"},
+					Usage:    "google wire di",
+					Required: false,
+				},
+				&cli.StringFlag{
+					Name:     "authorName",
+					Aliases:  []string{"u"},
+					Usage:    "author who created files",
+					Required: false,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				args := c.Args()
+				appName := args.First()
+				if strings.TrimSpace(appName) == "" {
+					return errors.New("generate app error: app name is empty")
+				}
+				packageName := args.Get(1)
+				di := c.Bool("wire")
+				authorName := c.String("authorName")
+				err := createFile(di, appName, packageName, authorName)
+				return err
+			},
 		},
 	}
-	app.Action = func(c *cli.Context) error {
-		appName := c.Args().Get(0)
-		if strings.TrimSpace(appName) == "" {
-			return errors.New("app name is empty")
-		}
-		packageName := c.String("packageName")
-		authorName := c.String("authorName")
-		wire := c.Bool("wire")
-		err := createFile(wire, appName, packageName, authorName)
-		return err
-	}
+
 	sort.Sort(cli.FlagsByName(app.Flags))
 	sort.Sort(cli.CommandsByName(app.Commands))
 
@@ -140,13 +146,8 @@ func createFile(wire bool, app, packageName, author string) error {
 			genMap["file"] = true
 		}
 
-		t, err := template.ParseFS(tpl, "file.tpl")
-		if err != nil {
-			return err
-		}
-
+		t := template.Must(template.ParseFS(tpl, "file.tpl"))
 		f, err := os.OpenFile(filepath.Join(newFileDir, concat(filename, ".go")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
-
 		if err != nil {
 			return err
 		}

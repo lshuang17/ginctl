@@ -22,18 +22,6 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-//var (
-//	di bool
-//	//di = *flag.Bool("di", true, "generate code by google wire di")
-//)
-//
-//func init() {
-//	flag.BoolVar(&di, "di", false, "generate code by google wire di")
-//
-//}
-
-//命令执行需要模板，将模板文件一起打包
-
 //go:embed file.tpl
 var tpl embed.FS
 

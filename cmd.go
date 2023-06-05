@@ -35,7 +35,8 @@ func main() {
 		{
 			Name: "new",
 			//Aliases: []string{"new"},
-			Usage: "generate app module",
+			Usage:     "generate app module",
+			UsageText: "ginctl new [-di -u username] app [package]",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
 					Name:     "wire",

@@ -4,9 +4,7 @@
 
 package {{.packageName}}
 {{if eq .fileName "router"}}import "github.com/gin-gonic/gin"{{end}}
-{{if and .wire .file}}
-{{if eq .fileName "provider"}}{{template "provider" .}}{{end}}
-
+{{if and .wire .file}}{{if eq .fileName "provider"}}{{template "provider" .}}{{end}}
 {{if ne .fileName "provider"}}
 type I{{.PackageName}}{{.FileName}} interface {
 }

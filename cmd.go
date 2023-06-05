@@ -76,7 +76,7 @@ func main() {
 
 func createFile(wire bool, app, packageName, author string) error {
 
-	var filenames = []string{"admin", "app", "dao", "pool", "router", "serializer", "service"}
+	var filenames = []string{"admin", "app", "dao", "router", "serializer", "service"}
 	if wire {
 		filenames = append(filenames, "handler", "provider")
 	}

@@ -22,19 +22,18 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-//go:embed file.tpl
+//go:embed tpl
 var tpl embed.FS
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "ginctl"
 	app.Version = "1.0.0"
-	app.Usage = "go run . [command options]"
+	app.Usage = "ginctl [command options]"
 	app.Commands = []*cli.Command{
 		{
-			Name:    "create",
-			Aliases: []string{"new"},
-			Usage:   "generate app module",
+			Name: "new",
+			//Aliases: []string{"new"},
+			Usage: "generate app module",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
 					Name:     "wire",
@@ -43,7 +42,7 @@ func main() {
 					Required: false,
 				},
 				&cli.StringFlag{
-					Name:     "authorName",
+					Name:     "author",
 					Aliases:  []string{"u"},
 					Usage:    "author who created files",
 					Required: false,
@@ -134,8 +133,8 @@ func createFile(wire bool, app, packageName, author string) error {
 			genMap["file"] = true
 		}
 
-		t := template.Must(template.ParseFS(tpl, "file.tpl"))
-		f, err := os.OpenFile(filepath.Join(newFileDir, concat(filename, ".go")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+		t := template.Must(template.ParseFS(tpl, "tpl/*.tpl"))
+		f, err := os.Create(filepath.Join(newFileDir, concat(filename, ".go")))
 		if err != nil {
 			return err
 		}
@@ -162,8 +161,6 @@ func fileOrDirIsExist(filePath string) (bool, error) {
 }
 
 func mkDir(filePath string) error {
-	//dp := filepath.Dir(filePath)
-	//os.RemoveAll(dp)
 	isExist, err := fileOrDirIsExist(filePath)
 	if err != nil {
 		return err

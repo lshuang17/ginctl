@@ -5,19 +5,10 @@
 package {{.packageName}}
 {{if eq .fileName "router"}}import "github.com/gin-gonic/gin"{{end}}
 {{if and .wire .file}}
-{{if eq .fileName "provider"}}
-import "github.com/google/wire"
-var ProviderSet = wire.NewSet(
-	New{{.PackageName}}Handler,
-	New{{.PackageName}}Router,
-	New{{.PackageName}}Repo,
-	New{{.PackageName}}Service,
-	//New{{.PackageName}}Cache,
-){{end}}
+{{if eq .fileName "provider"}}{{template "provider" .}}{{end}}
 
 {{if ne .fileName "provider"}}
 type I{{.PackageName}}{{.FileName}} interface {
-
 }
 
 type {{.packageName}}{{.FileName}} struct {
@@ -35,15 +26,12 @@ func New{{.PackageName}}{{.FileName}}({{.param}} {{.di}}) I{{.PackageName}}{{.Fi
 
 {{if eq .fileName "router"}}
 func (router {{.packageName}}{{.FileName}}) Router(r *gin.Engine) {
-
 }
 {{end}}
 {{end}}
 {{else}}
 {{if eq .fileName "router"}}
 func Router(r *gin.Engine) {
-
 }
 {{end}}
 {{end}}
-

@@ -26,40 +26,41 @@ import (
 var tpl embed.FS
 
 func main() {
-	app := cli.App{
-		Usage:   "ginctl [command options]",
-		Version: "1.0.0",
-		Commands: []*cli.Command{
-			{
-				Name: "new",
-				//Aliases: []string{"new"},
-				Usage: "generate app module",
-				Flags: []cli.Flag{
-					&cli.BoolFlag{
-						Name:     "wire",
-						Aliases:  []string{"di"},
-						Usage:    "google wire di",
-						Required: false,
-					},
-					&cli.StringFlag{
-						Name:     "author",
-						Aliases:  []string{"u"},
-						Usage:    "author who created files",
-						Required: false,
-					},
+	app := cli.NewApp()
+	app.Name = "ginctl"
+	app.Usage = "generate app module"
+	app.UsageText = "ginctl new [-di -u username] app [package]"
+	app.Version = "1.0.0"
+	app.Commands = []*cli.Command{
+		{
+			Name: "new",
+			//Aliases: []string{"new"},
+			Usage: "generate app module",
+			Flags: []cli.Flag{
+				&cli.BoolFlag{
+					Name:     "wire",
+					Aliases:  []string{"di"},
+					Usage:    "google wire di",
+					Required: false,
 				},
-				Action: func(c *cli.Context) error {
-					args := c.Args()
-					appName := args.First()
-					if strings.TrimSpace(appName) == "" {
-						return errors.New("generate app error: app name is empty")
-					}
-					packageName := args.Get(1)
-					di := c.Bool("wire")
-					authorName := c.String("authorName")
-					err := createFile(di, appName, packageName, authorName)
-					return err
+				&cli.StringFlag{
+					Name:     "author",
+					Aliases:  []string{"u"},
+					Usage:    "author who created files",
+					Required: false,
 				},
+			},
+			Action: func(c *cli.Context) error {
+				args := c.Args()
+				appName := args.First()
+				if strings.TrimSpace(appName) == "" {
+					return errors.New("generate app error: app name is empty")
+				}
+				packageName := args.Get(1)
+				di := c.Bool("wire")
+				authorName := c.String("authorName")
+				err := createFile(di, appName, packageName, authorName)
+				return err
 			},
 		},
 	}

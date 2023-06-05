@@ -58,7 +58,7 @@ func main() {
 				}
 				packageName := args.Get(1)
 				di := c.Bool("wire")
-				authorName := c.String("authorName")
+				authorName := c.String("author")
 				err := createFile(di, appName, packageName, authorName)
 				return err
 			},

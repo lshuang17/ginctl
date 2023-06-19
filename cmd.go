@@ -75,12 +75,6 @@ func main() {
 }
 
 func createFile(wire bool, app, packageName, author string) error {
-
-	var filenames = []string{"admin", "app", "dao", "router", "serializer", "service"}
-	if wire {
-		filenames = append(filenames, "handler", "provider")
-	}
-
 	rootDir, err := os.Getwd()
 	if err != nil {
 		return err
@@ -108,11 +102,13 @@ func createFile(wire bool, app, packageName, author string) error {
 		"author":      author,
 	}
 
+	var filenames = []string{"admin", "app", "dao", "router", "serializer", "service"}
+	if wire {
+		filenames = append(filenames, "handler", "provider")
+	}
+
 	for _, filename := range filenames {
 		tmplName := cases.Title(language.English).String(filename)
-		if filename == "dao" {
-			tmplName = "Repo"
-		}
 		genMap["fileName"] = filename
 		genMap["FileName"] = tmplName
 		switch filename {
@@ -121,8 +117,8 @@ func createFile(wire bool, app, packageName, author string) error {
 			genMap["di"] = concat("I", packageUpperName, "Service")
 			genMap["file"] = true
 		case "service":
-			genMap["param"] = "repo"
-			genMap["di"] = concat("I", packageUpperName, "Repo")
+			genMap["param"] = "dao"
+			genMap["di"] = concat("I", packageUpperName, "Dao")
 			genMap["file"] = true
 		case "dao":
 			genMap["file"] = true
@@ -130,26 +126,42 @@ func createFile(wire bool, app, packageName, author string) error {
 			genMap["di"] = ""
 		case "router":
 			genMap["file"] = true
-			genMap["param"] = "h"
+			genMap["param"] = "handler"
 			genMap["di"] = concat("I", packageUpperName, "Handler")
 		case "provider":
 			genMap["file"] = true
 		}
 
-		t := template.Must(template.ParseFS(tpl, "tpl/*.tpl"))
-		f, err := os.Create(filepath.Join(newFileDir, concat(filename, ".go")))
-		if err != nil {
-			return err
+		if filename == "provider" {
+			err = createGoFiles(newFileDir, filename, "tpl/provider.tpl", genMap)
+			if err != nil {
+				return err
+			}
+		} else if filename == "router" {
+			err = createGoFiles(newFileDir, filename, "tpl/router.tpl", genMap)
+			if err != nil {
+				return err
+			}
+		} else {
+			err = createGoFiles(newFileDir, filename, "tpl/file.tpl", genMap)
+			if err != nil {
+				return err
+			}
 		}
-
-		err = t.Execute(f, genMap)
-		if err != nil {
-			f.Close()
-			return err
-		}
-		f.Close()
 	}
 	return nil
+}
+
+func createGoFiles(dir, filename, fsPatterns string, paddingMap map[string]any) error {
+	t := template.Must(template.ParseFS(tpl, fsPatterns))
+	f, err := os.Create(filepath.Join(dir, concat(filename, ".go")))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	err = t.Execute(f, paddingMap)
+	return err
 }
 
 func fileOrDirIsExist(filePath string) (bool, error) {

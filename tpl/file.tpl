@@ -3,7 +3,7 @@
 // @Author: {{.author}}
 
 package {{.packageName}}
-{{if and .wire .file}}
+{{if and .wire}}
 type I{{.PackageName}}{{.FileName}} interface {
 }
 

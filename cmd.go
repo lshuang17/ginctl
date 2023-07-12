@@ -11,6 +11,7 @@ import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"runtime"
@@ -61,6 +62,39 @@ func main() {
 				di := c.Bool("wire")
 				authorName := c.String("author")
 				err := createFile(di, appName, packageName, authorName)
+				return err
+			},
+		},
+		{
+			Name:      "init",
+			Usage:     "go mod init project_name [mod_name]",
+			UsageText: "ginctl init your_project [your_project.com]",
+			Action: func(c *cli.Context) error {
+				args := c.Args()
+				proName := args.First()
+				if strings.TrimSpace(proName) == "" {
+					return errors.New("init project error: project name is empty")
+				}
+				modName := args.Get(1)
+				if strings.TrimSpace(modName) == "" {
+					modName = proName
+				}
+				err := os.Mkdir(proName, 0666)
+				if err != nil {
+					return err
+				}
+
+				shellPre := "bash"
+				shellArg := "-c"
+				if "windows" == runtime.GOOS {
+					shellPre = "cmd"
+					shellArg = "/C"
+				}
+
+				shell := "cd " + proName + " && go mod init " + modName
+				cmd := exec.Command(shellPre, shellArg, shell)
+				err = cmd.Run()
+
 				return err
 			},
 		},

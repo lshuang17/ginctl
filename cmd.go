@@ -17,7 +17,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-//go:embed tpl
+//go:embed file.tpl
 var tpl embed.FS
 
 func main() {

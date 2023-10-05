@@ -49,6 +49,8 @@ func createFile(wire bool, app, packageName, author string) error {
 		filenames = append(filenames, "handler", "provider")
 	}
 
+	var pre = "I"
+
 	for _, filename := range filenames {
 		tmplName := cases.Title(language.English).String(filename)
 		genMap["fileName"] = filename
@@ -56,11 +58,11 @@ func createFile(wire bool, app, packageName, author string) error {
 		switch filename {
 		case "handler":
 			genMap["param"] = "svc"
-			genMap["di"] = concat("I", packageUpperName, "Service")
+			genMap["di"] = concat(pre, packageUpperName, "Service")
 			genMap["file"] = true
 		case "service":
 			genMap["param"] = "dao"
-			genMap["di"] = concat("I", packageUpperName, "Dao")
+			genMap["di"] = concat(pre, packageUpperName, "Dao")
 			genMap["file"] = true
 		case "dao":
 			genMap["file"] = true
@@ -69,27 +71,16 @@ func createFile(wire bool, app, packageName, author string) error {
 		case "router":
 			genMap["file"] = true
 			genMap["param"] = "handler"
-			genMap["di"] = concat("I", packageUpperName, "Handler")
+			genMap["di"] = concat(pre, packageUpperName, "Handler")
 		case "provider":
 			genMap["file"] = true
 		}
 
-		if filename == "provider" {
-			err = createGoFiles(newFileDir, filename, "tpl/provider.tpl", genMap)
-			if err != nil {
-				return err
-			}
-		} else if filename == "router" {
-			err = createGoFiles(newFileDir, filename, "tpl/router.tpl", genMap)
-			if err != nil {
-				return err
-			}
-		} else {
-			err = createGoFiles(newFileDir, filename, "tpl/file.tpl", genMap)
-			if err != nil {
-				return err
-			}
+		err = createGoFiles(newFileDir, filename, "file.tpl", genMap)
+		if err != nil {
+			return err
 		}
+
 	}
 	return nil
 }

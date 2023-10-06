@@ -21,7 +21,9 @@ var ProviderSet = wire.NewSet(
 
 {{- if ne .fileName "provider" -}}
 type I{{.PackageName}}{{.FileName}} interface {
-
+    {{if eq .fileName "router" -}}
+    Router(r *gin.Engine)
+    {{- end}}
 }
 
 type {{.packageName}}{{.FileName}} struct {

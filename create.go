@@ -8,7 +8,6 @@ import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"os"
-	"os/user"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -31,10 +30,10 @@ func createFile(wire bool, app, packageName, author string) error {
 		packageName = filepath.Base(newFileDir)
 	}
 	packageUpperName := cases.Title(language.English).String(packageName)
-	if author == "" {
-		pcUser, _ := user.Current()
-		author = concat(pcUser.Name, "-", pcUser.Username)
-	}
+	//if author == "" {
+	//	pcUser, _ := user.Current()
+	//	author = concat(pcUser.Name, "-", pcUser.Username)
+	//}
 
 	var genMap = map[string]any{
 		"packageName": packageName,

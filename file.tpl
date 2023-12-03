@@ -1,6 +1,8 @@
-// @Name: {{.fileName}}.go
+// @FileName: {{.fileName}}.go
 // @Date: {{.createAt}}
+{{- if ne .author ""}}
 // @Author: {{.author}}
+{{- end}}
 
 package {{.packageName}}
 {{if ne .fileName "serializer" -}}

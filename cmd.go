@@ -48,7 +48,7 @@ func newCmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:     "wire",
 				Aliases:  []string{"di"},
-				Usage:    "google wire di",
+				Usage:    "google wire",
 				Required: false,
 			},
 			&cli.StringFlag{
